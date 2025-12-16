@@ -2,27 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // --- Icons (Inline SVGs for reliability) ---
+// Updated to accept props for flexible sizing
 const Icons = {
-  ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
-  ChevronLeft: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>,
-  X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
-  Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>,
-  Clock: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-  Zap: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-  TrendingUp: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-  Calendar: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
-  Brain: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>,
-  Message: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-  CreditCard: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>,
-  Bell: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>,
-  Flame: () => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
-  Loop: () => <svg xmlns="http://www.w3.org/2000/svg" width="100" height="40" viewBox="0 0 100 40" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 20h80m-5-5 5 5-5 5M15 25l-5-5 5-5"/></svg>,
-  NaviaLogo: () => (
-    <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  ChevronRight: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m9 18 6-6-6-6"/></svg>,
+  ChevronLeft: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m15 18-6-6 6-6"/></svg>,
+  X: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+  Check: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 6 9 17l-5-5"/></svg>,
+  Clock: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  Zap: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  TrendingUp: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+  Calendar: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
+  Brain: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>,
+  Message: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+  CreditCard: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>,
+  Bell: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>,
+  Flame: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
+  Loop: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="100" height="40" viewBox="0 0 100 40" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M10 20h80m-5-5 5 5-5 5M15 25l-5-5 5-5"/></svg>,
+  NaviaLogo: (props: any) => (
+    <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M50 0L61 39L100 50L61 61L50 100L39 61L0 50L39 39L50 0Z" fill="#A78BFA" className="drop-shadow-[0_0_15px_rgba(167,139,250,0.8)]" />
     </svg>
   ),
-  ArrowRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+  ArrowRight: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 };
 
 // --- Slide Data Definitions ---
@@ -100,6 +101,12 @@ const slides = [
   },
   {
     id: 11,
+    type: 'crm',
+    headline: 'VISIBILIDAD TOTAL DEL NEGOCIO',
+    subheadline: 'CRM Integrado & Clasificación Automática'
+  },
+  {
+    id: 12,
     type: 'table',
     headline: 'RENDIMIENTO',
     headers: ['Humano', 'Sistema NAVIA'],
@@ -111,14 +118,14 @@ const slides = [
     ]
   },
   {
-    id: 12,
+    id: 13,
     type: 'before-after',
     headline: 'TU NUEVA REALIDAD',
     before: ['34 chats pendientes', 'Estrés operativo', 'Turnos perdidos'],
     after: ['Inbox Cero', 'Agenda Llena', 'Control Total']
   },
   {
-    id: 13,
+    id: 14,
     type: 'stats',
     headline: 'RESULTADOS PROMEDIO',
     stats: [
@@ -128,7 +135,7 @@ const slides = [
     ]
   },
   {
-    id: 14,
+    id: 15,
     type: 'check-list',
     headline: 'ESTE SISTEMA ES PARA VOS SI:',
     items: [
@@ -139,7 +146,7 @@ const slides = [
     ]
   },
   {
-    id: 15,
+    id: 16,
     type: 'disqualify',
     headline: 'ESTO NO ES PARA VOS SI:',
     items: [
@@ -150,7 +157,7 @@ const slides = [
     ]
   },
   {
-    id: 16,
+    id: 17,
     type: 'offer',
     headline: 'LO QUE VAS A LOGRAR',
     items: [
@@ -160,7 +167,7 @@ const slides = [
     ]
   },
   {
-    id: 17,
+    id: 18,
     type: 'cta',
     headline: 'AGENDA TU AUDITORÍA DE IA',
     subheadline: 'Sesión de Estrategia de 30 Minutos (Gratis)'
@@ -447,6 +454,93 @@ const SlideTimeline = ({ slide }) => (
   </LayoutWrapper>
 );
 
+const CRMCard = ({ name, time, tag, color }) => (
+    <div className="bg-[#1e1629] p-4 rounded-xl border border-white/5 hover:border-[#A78BFA]/50 transition-colors shadow-lg group">
+        <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-white/10"></div>
+                <span className="font-bold text-gray-200">{name}</span>
+            </div>
+            <span className="text-[10px] text-gray-500 font-mono">{time}</span>
+        </div>
+        <div className={`text-xs inline-block px-2 py-1 rounded border ${
+            color === 'purple' ? 'bg-[#A78BFA]/20 border-[#A78BFA]/30 text-[#A78BFA]' :
+            color === 'green' ? 'bg-green-500/20 border-green-500/30 text-green-400' :
+            color === 'blue' ? 'bg-blue-500/20 border-blue-500/30 text-blue-400' :
+            color === 'pink' ? 'bg-pink-500/20 border-pink-500/30 text-pink-400' :
+            'bg-gray-700/30 border-gray-600 text-gray-400'
+        }`}>
+            {tag}
+        </div>
+    </div>
+);
+
+const SlideCRM = ({ slide }) => (
+  <LayoutWrapper>
+    <div className="flex flex-col h-full w-full">
+        <div className="text-center mb-10">
+            <h2 className="text-5xl font-bold text-white uppercase tracking-wide">{slide.headline}</h2>
+            <p className="text-xl text-[#A78BFA] mt-2 uppercase tracking-widest">{slide.subheadline}</p>
+        </div>
+
+        {/* Kanban Board */}
+        <div className="flex gap-6 h-full pb-8">
+            {/* Column 1: Entrada */}
+            <div className="flex-1 glass-panel rounded-2xl p-4 flex flex-col bg-white/5 border-t-4 border-gray-600">
+                <div className="flex justify-between items-center mb-6 pb-2 border-b border-white/10">
+                    <h3 className="font-bold text-gray-400 uppercase tracking-wider text-sm">Entrada</h3>
+                    <span className="bg-gray-700 text-xs px-2 py-1 rounded text-white">12</span>
+                </div>
+                <div className="space-y-4">
+                     <CRMCard name="Martín G." time="10 min" tag="Consulta" color="gray" />
+                     <CRMCard name="Lucía F." time="32 min" tag="Instagram" color="pink" />
+                </div>
+            </div>
+
+            {/* Column 2: Calificados (AI Action) */}
+            <div className="flex-1 glass-panel rounded-2xl p-4 flex flex-col bg-[#A78BFA]/5 border-t-4 border-[#A78BFA]">
+                 <div className="flex justify-between items-center mb-6 pb-2 border-b border-white/10">
+                    <h3 className="font-bold text-[#A78BFA] uppercase tracking-wider text-sm flex items-center gap-2">
+                        <Icons.Brain width="20" height="20" /> Calificados
+                    </h3>
+                    <span className="bg-[#A78BFA]/20 text-xs px-2 py-1 rounded text-[#A78BFA]">5</span>
+                </div>
+                <div className="space-y-4">
+                     <CRMCard name="Sofía R." time="2h" tag="Interés: Implantes" color="purple" />
+                     {/* Animated Card moving in */}
+                     <div className="animate-fade-in">
+                        <CRMCard name="Jorge B." time="Ahora" tag="Alta Intención" color="green" />
+                     </div>
+                </div>
+            </div>
+
+            {/* Column 3: Agendados */}
+            <div className="flex-1 glass-panel rounded-2xl p-4 flex flex-col bg-white/5 border-t-4 border-blue-400">
+                <div className="flex justify-between items-center mb-6 pb-2 border-b border-white/10">
+                    <h3 className="font-bold text-blue-400 uppercase tracking-wider text-sm">Agendados</h3>
+                    <span className="bg-blue-900/40 text-xs px-2 py-1 rounded text-blue-300">3</span>
+                </div>
+                 <div className="space-y-4">
+                     <CRMCard name="Ana T." time="Jueves 15:00" tag="Confirmado" color="blue" />
+                </div>
+            </div>
+
+             {/* Column 4: Cerrados */}
+            <div className="flex-1 glass-panel rounded-2xl p-4 flex flex-col bg-white/5 border-t-4 border-green-500">
+                <div className="flex justify-between items-center mb-6 pb-2 border-b border-white/10">
+                    <h3 className="font-bold text-green-500 uppercase tracking-wider text-sm">Ventas</h3>
+                    <span className="bg-green-900/40 text-xs px-2 py-1 rounded text-green-300">8</span>
+                </div>
+                 <div className="space-y-4">
+                     <CRMCard name="Pedro S." time="Ayer" tag="Pagó Seña" color="green" />
+                     <CRMCard name="Marta L." time="Ayer" tag="Tratamiento Completo" color="green" />
+                </div>
+            </div>
+        </div>
+    </div>
+  </LayoutWrapper>
+);
+
 const SlideTable = ({ slide }) => (
   <LayoutWrapper className="justify-center">
     <h2 className="text-4xl font-bold text-white mb-12 uppercase tracking-wider text-center">{slide.headline}</h2>
@@ -621,6 +715,7 @@ const App = () => {
         case 'hub': return <SlideHub slide={slide} />;
         case 'grid': return <SlideGrid slide={slide} />;
         case 'timeline': return <SlideTimeline slide={slide} />;
+        case 'crm': return <SlideCRM slide={slide} />;
         case 'table': return <SlideTable slide={slide} />;
         case 'before-after': return <SlideBeforeAfter slide={slide} />;
         case 'stats': return <SlideStats slide={slide} />;
